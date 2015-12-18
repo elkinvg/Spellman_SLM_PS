@@ -119,6 +119,29 @@ public:
 //=========================================
 //	Define classes for commands
 //=========================================
+//	Command RequestStatus class definition
+class RequestStatusClass : public Tango::Command
+{
+public:
+	RequestStatusClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	RequestStatusClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
+	~RequestStatusClass() {};
+	
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Spellman_SLM_PS *>(dev))->is_RequestStatus_allowed(any);}
+};
+
 //	Command ResetFaults class definition
 class ResetFaultsClass : public Tango::Command
 {
@@ -142,11 +165,11 @@ public:
 	{return (static_cast<Spellman_SLM_PS *>(dev))->is_ResetFaults_allowed(any);}
 };
 
-//	Command RequestStatus class definition
-class RequestStatusClass : public Tango::Command
+//	Command SetLocalMode class definition
+class SetLocalModeClass : public Tango::Command
 {
 public:
-	RequestStatusClass(const char   *name,
+	SetLocalModeClass(const char   *name,
 	               Tango::CmdArgType in,
 				   Tango::CmdArgType out,
 				   const char        *in_desc,
@@ -154,15 +177,84 @@ public:
 				   Tango::DispLevel  level)
 	:Command(name,in,out,in_desc,out_desc, level)	{};
 
-	RequestStatusClass(const char   *name,
+	SetLocalModeClass(const char   *name,
 	               Tango::CmdArgType in,
 				   Tango::CmdArgType out)
 	:Command(name,in,out)	{};
-	~RequestStatusClass() {};
+	~SetLocalModeClass() {};
 	
 	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
 	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
-	{return (static_cast<Spellman_SLM_PS *>(dev))->is_RequestStatus_allowed(any);}
+	{return (static_cast<Spellman_SLM_PS *>(dev))->is_SetLocalMode_allowed(any);}
+};
+
+//	Command SetRemoteMode class definition
+class SetRemoteModeClass : public Tango::Command
+{
+public:
+	SetRemoteModeClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	SetRemoteModeClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
+	~SetRemoteModeClass() {};
+	
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Spellman_SLM_PS *>(dev))->is_SetRemoteMode_allowed(any);}
+};
+
+//	Command TurnHVOff class definition
+class TurnHVOffClass : public Tango::Command
+{
+public:
+	TurnHVOffClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	TurnHVOffClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
+	~TurnHVOffClass() {};
+	
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Spellman_SLM_PS *>(dev))->is_TurnHVOff_allowed(any);}
+};
+
+//	Command TurnHVOn class definition
+class TurnHVOnClass : public Tango::Command
+{
+public:
+	TurnHVOnClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out,
+				   const char        *in_desc,
+				   const char        *out_desc,
+				   Tango::DispLevel  level)
+	:Command(name,in,out,in_desc,out_desc, level)	{};
+
+	TurnHVOnClass(const char   *name,
+	               Tango::CmdArgType in,
+				   Tango::CmdArgType out)
+	:Command(name,in,out)	{};
+	~TurnHVOnClass() {};
+	
+	virtual CORBA::Any *execute (Tango::DeviceImpl *dev, const CORBA::Any &any);
+	virtual bool is_allowed (Tango::DeviceImpl *dev, const CORBA::Any &any)
+	{return (static_cast<Spellman_SLM_PS *>(dev))->is_TurnHVOn_allowed(any);}
 };
 
 

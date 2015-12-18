@@ -227,6 +227,13 @@ public:
 //	Command related methods
 public:
 	/**
+	 *	Command RequestStatus related method
+	 *	Description: The host requests that the firmware sends the power supply status.
+	 *
+	 */
+	virtual void request_status();
+	virtual bool is_RequestStatus_allowed(const CORBA::Any &any);
+	/**
 	 *	Command ResetFaults related method
 	 *	Description: The host requests that the firmware resets all Fault messages and indicators.
 	 *
@@ -234,12 +241,39 @@ public:
 	virtual void reset_faults();
 	virtual bool is_ResetFaults_allowed(const CORBA::Any &any);
 	/**
-	 *	Command RequestStatus related method
-	 *	Description: The host requests that the firmware sends the power supply status.
+	 *	Command SetLocalMode related method
+	 *	Description: The host requests that the firmware to Local Mode.
 	 *
+	 *	@returns 
 	 */
-	virtual void request_status();
-	virtual bool is_RequestStatus_allowed(const CORBA::Any &any);
+	virtual Tango::DevUShort set_local_mode();
+	virtual bool is_SetLocalMode_allowed(const CORBA::Any &any);
+	/**
+	 *	Command SetRemoteMode related method
+	 *	Description: The host requests that the firmware to Remote Mode.
+	 *
+	 *	@returns 
+	 */
+	virtual Tango::DevUShort set_remote_mode();
+	virtual bool is_SetRemoteMode_allowed(const CORBA::Any &any);
+	/**
+	 *	Command TurnHVOff related method
+	 *	Description: The host requests that the firmware turn high voltage on or high voltage off.
+	 *               Response: 0 is ok
+	 *
+	 *	@returns 
+	 */
+	virtual Tango::DevUShort turn_hvoff();
+	virtual bool is_TurnHVOff_allowed(const CORBA::Any &any);
+	/**
+	 *	Command TurnHVOn related method
+	 *	Description: The host requests that the firmware turn high voltage on.
+	 *               Output: 0 is Ok, 1 is out of range
+	 *
+	 *	@returns 
+	 */
+	virtual Tango::DevUShort turn_hvon();
+	virtual bool is_TurnHVOn_allowed(const CORBA::Any &any);
 
 
 	//--------------------------------------------------------
@@ -263,6 +297,8 @@ private:
 
     vector<string> parseResponse(string response);
     void checkSocketState();
+
+    Tango::DevUShort setOnOrOffCom(Tango::DevBoolean mode, string command);
 
 /*----- PROTECTED REGION END -----*/	//	Spellman_SLM_PS::Additional Method prototypes
 };

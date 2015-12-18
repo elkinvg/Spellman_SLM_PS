@@ -160,6 +160,24 @@ Spellman_SLM_PSClass *Spellman_SLM_PSClass::instance()
 //===================================================================
 //--------------------------------------------------------
 /**
+ * method : 		RequestStatusClass::execute()
+ * description : 	method to trigger the execution of the command.
+ *
+ * @param	device	The device on which the command must be executed
+ * @param	in_any	The command input data
+ *
+ *	returns The command output data (packed in the Any object)
+ */
+//--------------------------------------------------------
+CORBA::Any *RequestStatusClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
+{
+	cout2 << "RequestStatusClass::execute(): arrived" << endl;
+	((static_cast<Spellman_SLM_PS *>(device))->request_status());
+	return new CORBA::Any();
+}
+
+//--------------------------------------------------------
+/**
  * method : 		ResetFaultsClass::execute()
  * description : 	method to trigger the execution of the command.
  *
@@ -178,7 +196,7 @@ CORBA::Any *ResetFaultsClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
 
 //--------------------------------------------------------
 /**
- * method : 		RequestStatusClass::execute()
+ * method : 		SetLocalModeClass::execute()
  * description : 	method to trigger the execution of the command.
  *
  * @param	device	The device on which the command must be executed
@@ -187,11 +205,61 @@ CORBA::Any *ResetFaultsClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(co
  *	returns The command output data (packed in the Any object)
  */
 //--------------------------------------------------------
-CORBA::Any *RequestStatusClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
+CORBA::Any *SetLocalModeClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
 {
-	cout2 << "RequestStatusClass::execute(): arrived" << endl;
-	((static_cast<Spellman_SLM_PS *>(device))->request_status());
-	return new CORBA::Any();
+	cout2 << "SetLocalModeClass::execute(): arrived" << endl;
+	return insert((static_cast<Spellman_SLM_PS *>(device))->set_local_mode());
+}
+
+//--------------------------------------------------------
+/**
+ * method : 		SetRemoteModeClass::execute()
+ * description : 	method to trigger the execution of the command.
+ *
+ * @param	device	The device on which the command must be executed
+ * @param	in_any	The command input data
+ *
+ *	returns The command output data (packed in the Any object)
+ */
+//--------------------------------------------------------
+CORBA::Any *SetRemoteModeClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
+{
+	cout2 << "SetRemoteModeClass::execute(): arrived" << endl;
+	return insert((static_cast<Spellman_SLM_PS *>(device))->set_remote_mode());
+}
+
+//--------------------------------------------------------
+/**
+ * method : 		TurnHVOffClass::execute()
+ * description : 	method to trigger the execution of the command.
+ *
+ * @param	device	The device on which the command must be executed
+ * @param	in_any	The command input data
+ *
+ *	returns The command output data (packed in the Any object)
+ */
+//--------------------------------------------------------
+CORBA::Any *TurnHVOffClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
+{
+	cout2 << "TurnHVOffClass::execute(): arrived" << endl;
+	return insert((static_cast<Spellman_SLM_PS *>(device))->turn_hvoff());
+}
+
+//--------------------------------------------------------
+/**
+ * method : 		TurnHVOnClass::execute()
+ * description : 	method to trigger the execution of the command.
+ *
+ * @param	device	The device on which the command must be executed
+ * @param	in_any	The command input data
+ *
+ *	returns The command output data (packed in the Any object)
+ */
+//--------------------------------------------------------
+CORBA::Any *TurnHVOnClass::execute(Tango::DeviceImpl *device, TANGO_UNUSED(const CORBA::Any &in_any))
+{
+	cout2 << "TurnHVOnClass::execute(): arrived" << endl;
+	return insert((static_cast<Spellman_SLM_PS *>(device))->turn_hvon());
 }
 
 
@@ -633,7 +701,14 @@ void Spellman_SLM_PSClass::command_factory()
 	//	Add your own code
 	
 	/*----- PROTECTED REGION END -----*/	//	Spellman_SLM_PSClass::command_factory_before
-
+	//	Command RequestStatus
+	RequestStatusClass	*pRequestStatusCmd =
+		new RequestStatusClass("RequestStatus",
+			Tango::DEV_VOID, Tango::DEV_VOID,
+			"",
+			"",
+			Tango::OPERATOR);
+	command_list.push_back(pRequestStatusCmd);
 
 	//	Command ResetFaults
 	ResetFaultsClass	*pResetFaultsCmd =
@@ -644,14 +719,43 @@ void Spellman_SLM_PSClass::command_factory()
 			Tango::OPERATOR);
 	command_list.push_back(pResetFaultsCmd);
 
-	//	Command RequestStatus
-	RequestStatusClass	*pRequestStatusCmd =
-		new RequestStatusClass("RequestStatus",
-			Tango::DEV_VOID, Tango::DEV_VOID,
+	//	Command SetLocalMode
+	SetLocalModeClass	*pSetLocalModeCmd =
+		new SetLocalModeClass("SetLocalMode",
+			Tango::DEV_VOID, Tango::DEV_USHORT,
 			"",
 			"",
 			Tango::OPERATOR);
-	command_list.push_back(pRequestStatusCmd);
+	command_list.push_back(pSetLocalModeCmd);
+
+	//	Command SetRemoteMode
+	SetRemoteModeClass	*pSetRemoteModeCmd =
+		new SetRemoteModeClass("SetRemoteMode",
+			Tango::DEV_VOID, Tango::DEV_USHORT,
+			"",
+			"",
+			Tango::OPERATOR);
+	command_list.push_back(pSetRemoteModeCmd);
+
+	//	Command TurnHVOff
+	TurnHVOffClass	*pTurnHVOffCmd =
+		new TurnHVOffClass("TurnHVOff",
+			Tango::DEV_VOID, Tango::DEV_USHORT,
+			"",
+			"",
+			Tango::OPERATOR);
+	command_list.push_back(pTurnHVOffCmd);
+
+	//	Command TurnHVOn
+	TurnHVOnClass	*pTurnHVOnCmd =
+		new TurnHVOnClass("TurnHVOn",
+			Tango::DEV_VOID, Tango::DEV_USHORT,
+			"",
+			"",
+			Tango::OPERATOR);
+	command_list.push_back(pTurnHVOnCmd);
+
+
 
 	/*----- PROTECTED REGION ID(Spellman_SLM_PSClass::command_factory_after) ENABLED START -----*/
 	

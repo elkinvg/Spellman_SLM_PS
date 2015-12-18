@@ -56,10 +56,14 @@ static const char *RcsId = "$Id:  $";
 //
 //  Command name   |  Method name
 //================================================================
-//  State          |  Inherited (no method)
-//  Status         |  Inherited (no method)
-//  ResetFaults    |  reset_faults
 //  RequestStatus  |  request_status
+//  ResetFaults    |  reset_faults
+//  SetLocalMode   |  set_local_mode
+//  SetRemoteMode  |  set_remote_mode
+//  TurnHVOff      |  turn_hvoff
+//  TurnHVOn       |  turn_hvon
+//  Status         |  Inherited (no method)
+//  State          |  Inherited (no method)
 //================================================================
 
 //================================================================
@@ -511,6 +515,28 @@ void Spellman_SLM_PS::add_dynamic_attributes()
 
 //--------------------------------------------------------
 /**
+ *	Command RequestStatus related method
+ *	Description: The host requests that the firmware sends the power supply status.
+ *
+ */
+//--------------------------------------------------------
+void Spellman_SLM_PS::request_status()
+{
+	DEBUG_STREAM << "Spellman_SLM_PS::RequestStatus()  - " << device_name << endl;
+	/*----- PROTECTED REGION ID(Spellman_SLM_PS::request_status) ENABLED START -----*/
+	
+	//	Add your own code
+    checkSocketState();
+    if (!isSocketOn) return;
+
+    vector<string> parsedReply = sendCommand(string("22"));
+    // ???
+
+//    string statusAns =
+	/*----- PROTECTED REGION END -----*/	//	Spellman_SLM_PS::request_status
+}
+//--------------------------------------------------------
+/**
  *	Command ResetFaults related method
  *	Description: The host requests that the firmware resets all Fault messages and indicators.
  *
@@ -541,25 +567,106 @@ void Spellman_SLM_PS::reset_faults()
 }
 //--------------------------------------------------------
 /**
- *	Command RequestStatus related method
- *	Description: The host requests that the firmware sends the power supply status.
+ *	Command SetLocalMode related method
+ *	Description: The host requests that the firmware to Local Mode.
  *
+ *	@returns 
  */
 //--------------------------------------------------------
-void Spellman_SLM_PS::request_status()
+Tango::DevUShort Spellman_SLM_PS::set_local_mode()
 {
-	DEBUG_STREAM << "Spellman_SLM_PS::RequestStatus()  - " << device_name << endl;
-	/*----- PROTECTED REGION ID(Spellman_SLM_PS::request_status) ENABLED START -----*/
+	Tango::DevUShort argout;
+	DEBUG_STREAM << "Spellman_SLM_PS::SetLocalMode()  - " << device_name << endl;
+	/*----- PROTECTED REGION ID(Spellman_SLM_PS::set_local_mode) ENABLED START -----*/
 	
 	//	Add your own code
     checkSocketState();
-    if (!isSocketOn) return;
+    if (!isSocketOn) return 65535;
 
-    vector<string> parsedReply = sendCommand(string("22"));
-    // ???
+    argout = setOnOrOffCom(false,string("99"));
 
-//    string statusAns =
-	/*----- PROTECTED REGION END -----*/	//	Spellman_SLM_PS::request_status
+    if (!argout) INFO_STREAM << "Local Mode" << endl;
+	
+	/*----- PROTECTED REGION END -----*/	//	Spellman_SLM_PS::set_local_mode
+	return argout;
+}
+//--------------------------------------------------------
+/**
+ *	Command SetRemoteMode related method
+ *	Description: The host requests that the firmware to Remote Mode.
+ *
+ *	@returns 
+ */
+//--------------------------------------------------------
+Tango::DevUShort Spellman_SLM_PS::set_remote_mode()
+{
+	Tango::DevUShort argout;
+	DEBUG_STREAM << "Spellman_SLM_PS::SetRemoteMode()  - " << device_name << endl;
+	/*----- PROTECTED REGION ID(Spellman_SLM_PS::set_remote_mode) ENABLED START -----*/
+	
+	//	Add your own code
+
+    checkSocketState();
+    if (!isSocketOn) return 65535;
+
+    argout = setOnOrOffCom(true,string("99"));
+
+    if (!argout) INFO_STREAM << "Remote Mode" << endl;
+	
+	/*----- PROTECTED REGION END -----*/	//	Spellman_SLM_PS::set_remote_mode
+	return argout;
+}
+//--------------------------------------------------------
+/**
+ *	Command TurnHVOff related method
+ *	Description: The host requests that the firmware turn high voltage on or high voltage off.
+ *               Response: 0 is ok
+ *
+ *	@returns 
+ */
+//--------------------------------------------------------
+Tango::DevUShort Spellman_SLM_PS::turn_hvoff()
+{
+	Tango::DevUShort argout;
+	DEBUG_STREAM << "Spellman_SLM_PS::TurnHVOff()  - " << device_name << endl;
+	/*----- PROTECTED REGION ID(Spellman_SLM_PS::turn_hvoff) ENABLED START -----*/
+	
+	//	Add your own code
+    checkSocketState();
+    if (!isSocketOn) return 65535;
+
+    argout = setOnOrOffCom(false,string("98"));
+
+    if (!argout) INFO_STREAM << "HV is OFF" << endl;
+	
+	/*----- PROTECTED REGION END -----*/	//	Spellman_SLM_PS::turn_hvoff
+	return argout;
+}
+//--------------------------------------------------------
+/**
+ *	Command TurnHVOn related method
+ *	Description: The host requests that the firmware turn high voltage on.
+ *               Output: 0 is Ok, 1 is out of range
+ *
+ *	@returns 
+ */
+//--------------------------------------------------------
+Tango::DevUShort Spellman_SLM_PS::turn_hvon()
+{
+	Tango::DevUShort argout;
+	DEBUG_STREAM << "Spellman_SLM_PS::TurnHVOn()  - " << device_name << endl;
+	/*----- PROTECTED REGION ID(Spellman_SLM_PS::turn_hvon) ENABLED START -----*/
+	
+	//	Add your own code
+    checkSocketState();
+    if (!isSocketOn) return 65535;
+
+    argout = setOnOrOffCom(true,string("98"));
+
+    if (!argout) INFO_STREAM << "HV is ON" << endl;
+	
+	/*----- PROTECTED REGION END -----*/	//	Spellman_SLM_PS::turn_hvon
+	return argout;
 }
 //--------------------------------------------------------
 /**
@@ -590,6 +697,32 @@ void Spellman_SLM_PS::checkSocketState()
         set_status("Device is OFF or Socket is FAULT");
     }
 }
+
+Tango::DevUShort Spellman_SLM_PS::setOnOrOffCom(Tango::DevBoolean mode, string command)
+{
+    vector<string> arg;
+
+    if(mode) arg.push_back("1");
+    else arg.push_back("0");
+
+    vector<string> parsedReply = sendCommand(command,arg);
+
+    if (parsedReply.size()<3) {
+        set_state(Tango::FAULT);
+        set_status("Incorrect reply of Device");
+        return 65535;
+    }
+    if (parsedReply[1][0] == SUCCESS)
+    {
+        return 0;
+    }
+    if (parsedReply[1][0] == '1')
+    {
+        INFO_STREAM << "Out of Range" << endl;
+        return 1;
+    }
+}
+
 
 string Spellman_SLM_PS::generateCommand(string idCommand, vector<string> arguments)
 {
